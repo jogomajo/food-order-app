@@ -1,4 +1,4 @@
-import classes from './Cart.module.scss';
+import classes from './Card.module.scss';
 
 const Card: React.FC = ({ children }) => {
   return <div className={classes.card}>{children}</div>;

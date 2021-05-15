@@ -1,12 +1,15 @@
+import MealItemForm from './MealItemForm';
+
 import classes from './MealItem.module.scss';
 
 interface IProps {
   name: string;
   description: string;
   price: number;
+  id: string;
 }
 
-const MealItem: React.FC<IProps> = ({ name, description, price }) => {
+const MealItem: React.FC<IProps> = ({ name, description, price, id }) => {
   const priceRounded = `$${price.toFixed(2)}`;
 
   return (
@@ -16,7 +19,9 @@ const MealItem: React.FC<IProps> = ({ name, description, price }) => {
         <div className={classes.description}>{description}</div>
         <div className={classes.price}>{priceRounded}</div>
       </div>
-      <div></div>
+      <div>
+        <MealItemForm id={id} />
+      </div>
     </li>
   );
 };

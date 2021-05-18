@@ -1,3 +1,5 @@
+import React, { forwardRef } from 'react';
+
 import classes from './Input.module.scss';
 
 interface IProps {
@@ -12,13 +14,13 @@ interface IProps {
   };
 }
 
-const Input: React.FC<IProps> = ({ label, input }) => {
+const Input = forwardRef<HTMLInputElement, IProps>(({ label, input }, ref) => {
   return (
     <div className={classes.input}>
       <label htmlFor={input.id}>{label}</label>
-      <input {...input} />
+      <input ref={ref} {...input} />
     </div>
   );
-};
+});
 
 export default Input;

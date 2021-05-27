@@ -1,15 +1,18 @@
 import { FormEvent, useRef, useState } from 'react';
 
+import { UserDataTypes } from './Cart';
+
 import classes from './Checkout.module.scss';
 
 interface ICheckoutProps {
   onCancel: () => void;
+  onConfirm: (user: UserDataTypes) => void;
 }
 
-const isEmpty = (value: string = ''): boolean => value.trim() === '';
-const isFiveChars = (value: string = ''): boolean => value.trim().length === 5;
+const isEmpty = (value: string): boolean => value.trim() === '';
+const isFiveChars = (value: string): boolean => value.trim().length === 5;
 
-const Checkout: React.FC<ICheckoutProps> = ({ onCancel }) => {
+const Checkout: React.FC<ICheckoutProps> = ({ onCancel, onConfirm }) => {
   const [formInputsValidity, setFormInputsValidity] = useState({
     name: true,
     street: true,
@@ -25,10 +28,14 @@ const Checkout: React.FC<ICheckoutProps> = ({ onCancel }) => {
   const confirmHandler = (event: FormEvent) => {
     event.preventDefault();
 
-    const enteredName = nameInputRef.current?.value;
-    const enteredStreet = streetInputRef.current?.value;
-    const enteredPostalCode = postalCodeInputRef.current?.value;
-    const enteredCity = cityInputRef.current?.value;
+    const enteredName = nameInputRef.current ? nameInputRef.current.value : '';
+    const enteredStreet = streetInputRef.current
+      ? streetInputRef.current.value
+      : '';
+    const enteredPostalCode = postalCodeInputRef.current
+      ? postalCodeInputRef.current.value
+      : '';
+    const enteredCity = cityInputRef.current ? cityInputRef.current.value : '';
 
     const enteredNameIsValid = !isEmpty(enteredName);
     const enteredStreetIsValid = !isEmpty(enteredStreet);
@@ -51,6 +58,13 @@ const Checkout: React.FC<ICheckoutProps> = ({ onCancel }) => {
     if (!formIsValid) {
       return;
     }
+
+    onConfirm({
+      name: enteredName,
+      street: enteredStreet,
+      city: enteredCity,
+      postalCode: enteredPostalCode,
+    });
   };
 
   const nameControlClasses = `${classes.control} ${

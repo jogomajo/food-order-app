@@ -7,12 +7,21 @@ import { CartContext, ItemTypes } from '../../store/cart-context';
 
 import classes from './Cart.module.scss';
 
+export type UserDataTypes = {
+  name: string;
+  street: string;
+  city: string;
+  postalCode: string;
+};
+
 interface IProps {
   onClose: () => void;
 }
 
 const Cart: React.FC<IProps> = ({ onClose }) => {
   const [isCheckout, setIsCheckout] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [didSubmit, setDidSubmit] = useState(false);
 
   const cartCtx = useContext(CartContext);
 
@@ -29,6 +38,25 @@ const Cart: React.FC<IProps> = ({ onClose }) => {
 
   const orderHandler = () => {
     setIsCheckout(true);
+  };
+
+  const submitOrderHandler = async (userData: UserDataTypes) => {
+    setIsSubmitting(true);
+
+    await fetch(
+      'https://food-order-app-66022-default-rtdb.europe-west1.firebasedatabase.app/orders.json',
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          user: userData,
+          orderdItems: cartCtx.items,
+        }),
+      }
+    );
+
+    setIsSubmitting(false);
+    setDidSubmit(true);
+    cartCtx.clearCart();
   };
 
   const cartItems = (
@@ -59,15 +87,38 @@ const Cart: React.FC<IProps> = ({ onClose }) => {
     </div>
   );
 
-  return (
-    <Modal onClose={onClose}>
+  const cartModalContent = (
+    <>
       {cartItems}
       <div className={classes.total}>
         <span>Total Amount</span>
         <span>{totalAmount}</span>
       </div>
-      {isCheckout && <Checkout onCancel={onClose} />}
+      {isCheckout && (
+        <Checkout onConfirm={submitOrderHandler} onCancel={onClose} />
+      )}
       {!isCheckout && modalActions}
+    </>
+  );
+
+  const isSubmittingModalContent = <p>Sending order data...</p>;
+
+  const didSubmitModalContent = (
+    <>
+      <p>Successfully sent the order!</p>
+      <div className={classes.actions}>
+        <button className={classes.button} onClick={onClose}>
+          Close
+        </button>
+      </div>
+    </>
+  );
+
+  return (
+    <Modal onClose={onClose}>
+      {!isSubmitting && !didSubmit && cartModalContent}
+      {isSubmitting && isSubmittingModalContent}
+      {didSubmit && didSubmitModalContent}
     </Modal>
   );
 };

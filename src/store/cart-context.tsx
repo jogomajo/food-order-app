@@ -5,6 +5,7 @@ interface ICartContext {
   totalAmount: number;
   addItem: (item: ItemTypes) => void;
   removeItem: (id: string) => void;
+  clearCart: () => void;
 }
 
 export type ItemTypes = {
@@ -25,11 +26,16 @@ type RemoveAction = {
   id: string;
 };
 
-export type CartReducerActions = AddAction | RemoveAction;
+type ClearAction = {
+  type: 'CLEAR';
+};
+
+export type CartReducerActions = AddAction | RemoveAction | ClearAction;
 
 export const CartContext = React.createContext<ICartContext>({
   items: [],
   totalAmount: 0,
   addItem: () => {},
   removeItem: () => {},
+  clearCart: () => {},
 });
